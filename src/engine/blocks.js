@@ -13,18 +13,32 @@ export const BLOCK = {
     SNOW: 24, ICE: 25, TNT: 26, BOOKSHELF: 27, GLOWSTONE: 28, CACTUS: 29,
 };
 
-// Tile index in the texture atlas (16 tiles wide)
+// Texture names corresponding to PNG files in public/textures/block/
+export const TEXTURE_FILES = [
+    'grass_block_top', 'grass_block_side', 'dirt', 'stone', 'cobblestone',
+    'sand', 'gravel', 'oak_log', 'oak_log_top', 'oak_leaves',
+    'oak_planks', 'white_stained_glass', 'bricks', 'bedrock', 'blue_ice',
+    'crafting_table_top', 'crafting_table_side', 'crafting_table_front',
+    'furnace_top', 'furnace_side', 'furnace_front',
+    'barrel_top', 'barrel_side', 'barrel_bottom',
+    'gold_ore', 'iron_ore', 'coal_ore', 'diamond_ore',
+    'gold_block', 'iron_block', 'diamond_block',
+    'snow', 'ice', 'tnt_top', 'tnt_side', 'tnt_bottom',
+    'bookshelf', 'glowstone', 'cactus_top', 'cactus_side', 'cactus_bottom'
+];
+
+// Tile indices corresponding to the TEXTURE_FILES array
 export const T = {
     GRASS_TOP: 0, GRASS_SIDE: 1, DIRT: 2, STONE: 3, COBBLESTONE: 4,
     SAND: 5, GRAVEL: 6, LOG_SIDE: 7, LOG_TOP: 8, LEAVES: 9,
     PLANKS: 10, GLASS: 11, BRICK: 12, BEDROCK: 13, WATER: 14,
     CRAFT_TOP: 15, CRAFT_SIDE: 16, CRAFT_FRONT: 17,
     FURNACE_TOP: 18, FURNACE_SIDE: 19, FURNACE_FRONT: 20,
-    CHEST_TOP: 21, CHEST_SIDE: 22,
-    GOLD_ORE: 23, IRON_ORE: 24, COAL_ORE: 25, DIAMOND_ORE: 26,
-    GOLD_BLOCK: 27, IRON_BLOCK: 28, DIAMOND_BLOCK: 29,
-    SNOW: 30, ICE: 31, TNT_TOP: 32, TNT_SIDE: 33,
-    BOOKSHELF: 34, BOOKSHELF_SIDE: 35, GLOWSTONE: 36, CACTUS: 37,
+    CHEST_TOP: 21, CHEST_SIDE: 22, CHEST_BOTTOM: 23,
+    GOLD_ORE: 24, IRON_ORE: 25, COAL_ORE: 26, DIAMOND_ORE: 27,
+    GOLD_BLOCK: 28, IRON_BLOCK: 29, DIAMOND_BLOCK: 30,
+    SNOW: 31, ICE: 32, TNT_TOP: 33, TNT_SIDE: 34, TNT_BOTTOM: 35,
+    BOOKSHELF: 36, GLOWSTONE: 37, CACTUS_TOP: 38, CACTUS_SIDE: 39, CACTUS_BOTTOM: 40
 };
 
 // Block definitions: top/side/bottom tile, physics, drops
@@ -61,8 +75,8 @@ export const BLOCK_DEF = [
     { name: 'Crafting Table', solid: true, transparent: false, top: T.CRAFT_TOP, side: T.CRAFT_SIDE, bot: T.PLANKS, drop: 14, stack: 64, color: '#7B5C35' },
     // 15 FURNACE
     { name: 'Furnace', solid: true, transparent: false, top: T.FURNACE_TOP, side: T.FURNACE_SIDE, bot: T.STONE, drop: 15, stack: 64, color: '#555555' },
-    // 16 CHEST
-    { name: 'Chest', solid: true, transparent: false, top: T.CHEST_TOP, side: T.CHEST_SIDE, bot: T.CHEST_TOP, drop: 16, stack: 64, color: '#9C6B1A' },
+    // 16 CHEST (Barrel)
+    { name: 'Chest', solid: true, transparent: false, top: T.CHEST_TOP, side: T.CHEST_SIDE, bot: T.CHEST_BOTTOM, drop: 16, stack: 64, color: '#9C6B1A' },
     // 17 GOLD ORE
     { name: 'Gold Ore', solid: true, transparent: false, top: T.GOLD_ORE, side: T.GOLD_ORE, bot: T.GOLD_ORE, drop: 17, stack: 64, color: '#C8A800' },
     // 18 IRON ORE
@@ -82,13 +96,13 @@ export const BLOCK_DEF = [
     // 25 ICE
     { name: 'Ice', solid: true, transparent: true, top: T.ICE, side: T.ICE, bot: T.ICE, drop: 0, stack: 64, color: '#8AB5D4' },
     // 26 TNT
-    { name: 'TNT', solid: true, transparent: false, top: T.TNT_TOP, side: T.TNT_SIDE, bot: T.TNT_TOP, drop: 26, stack: 64, color: '#CC2222' },
+    { name: 'TNT', solid: true, transparent: false, top: T.TNT_TOP, side: T.TNT_SIDE, bot: T.TNT_BOTTOM, drop: 26, stack: 64, color: '#CC2222' },
     // 27 BOOKSHELF
     { name: 'Bookshelf', solid: true, transparent: false, top: T.PLANKS, side: T.BOOKSHELF, bot: T.PLANKS, drop: 27, stack: 64, color: '#7B5A3E' },
     // 28 GLOWSTONE
     { name: 'Glowstone', solid: true, transparent: false, top: T.GLOWSTONE, side: T.GLOWSTONE, bot: T.GLOWSTONE, drop: 28, stack: 64, color: '#F0D060' },
     // 29 CACTUS
-    { name: 'Cactus', solid: true, transparent: false, top: T.CACTUS, side: T.CACTUS, bot: T.CACTUS, drop: 29, stack: 64, color: '#2A7A2A' },
+    { name: 'Cactus', solid: true, transparent: false, top: T.CACTUS_TOP, side: T.CACTUS_SIDE, bot: T.CACTUS_BOTTOM, drop: 29, stack: 64, color: '#2A7A2A' },
 ];
 
 export const ITEM = {
