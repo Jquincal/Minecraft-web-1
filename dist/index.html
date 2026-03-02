@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MinecraftWeb – Voxel Game</title>
+    <meta name="description" content="A playable Minecraft-style voxel game in your browser." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;700&display=swap"
+        rel="stylesheet" />
+  <script type="module" crossorigin src="/assets/index-xosNYv_L.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CLtwTtBE.css">
+</head>
+
+<body>
+    <!-- Three.js Canvas -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Main Menu -->
+    <div id="main-menu" class="overlay">
+        <div id="menu-bg"></div>
+        <div id="menu-content">
+            <div id="menu-logo">
+                <span class="logo-line1">Minecraft</span>
+                <span class="logo-line2">Web Edition</span>
+            </div>
+            <div id="menu-buttons">
+                <button id="btn-play" class="menu-btn primary">▶ Jugar</button>
+                <button id="btn-settings" class="menu-btn">⚙ Configuración</button>
+                <button id="btn-credits" class="menu-btn">★ Créditos</button>
+            </div>
+            <div id="menu-footer">Construido con Three.js · Web Edition</div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-box">
+            <h2>Configuración</h2>
+            <label>Distancia de renderizado: <span id="rd-val">4</span> chunks
+                <input type="range" id="render-distance" min="2" max="10" value="4" />
+            </label>
+            <label>Velocidad del ratón: <span id="ms-val">1.5</span>
+                <input type="range" id="mouse-speed" min="0.5" max="5" step="0.1" value="1.5" />
+            </label>
+            <label>FOV: <span id="fov-val">75</span>°
+                <input type="range" id="fov-slider" min="60" max="110" value="75" />
+            </label>
+            <button class="menu-btn close-modal">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Credits Modal -->
+    <div id="credits-modal" class="modal hidden">
+        <div class="modal-box">
+            <h2>Créditos</h2>
+            <p>Motor 3D: <strong>Three.js</strong></p>
+            <p>Terreno: <strong>simplex-noise</strong></p>
+            <p>Construcción: <strong>Vite</strong></p>
+            <p style="margin-top:1rem;opacity:.6;">Inspirado en Minecraft® de Mojang</p>
+            <button class="menu-btn close-modal">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="overlay hidden">
+        <div id="loading-content">
+            <div id="loading-title">Generando Mundo…</div>
+            <div id="loading-bar">
+                <div id="loading-fill"></div>
+            </div>
+            <div id="loading-hint">Consejo: Presiona E para abrir el inventario</div>
+        </div>
+    </div>
+
+    <!-- HUD -->
+    <div id="hud" class="hidden">
+        <!-- Crosshair -->
+        <div id="crosshair">+</div>
+        <!-- Health & Hunger -->
+        <div id="bars">
+            <div id="health-bar">
+                <span class="bar-label">❤</span>
+                <div id="health-hearts"></div>
+            </div>
+            <div id="hunger-bar">
+                <div id="hunger-icons"></div>
+                <span class="bar-label">🍗</span>
+            </div>
+        </div>
+        <!-- Hotbar -->
+        <div id="hotbar">
+            <div id="hotbar-slots"></div>
+        </div>
+        <!-- Info overlay -->
+        <div id="info-overlay">
+            <div id="fps-counter">FPS: 0</div>
+            <div id="pos-display">X:0 Y:0 Z:0</div>
+            <div id="block-display">Bloque: Ninguno</div>
+        </div>
+        <!-- Controls hint -->
+        <div id="controls-hint">
+            WASD Mover · Espacio Saltar · Shift Agachar<br />
+            Click Izq Romper · Click Der Colocar · E Inventario · ESC Pausa
+        </div>
+    </div>
+
+    <!-- Pause Menu -->
+    <div id="pause-menu" class="overlay hidden">
+        <div id="pause-content">
+            <h1>Pause</h1>
+            <button id="btn-resume" class="menu-btn primary">▶ Continuar</button>
+            <button id="btn-pause-settings" class="menu-btn">⚙ Configuración</button>
+            <button id="btn-main-menu" class="menu-btn danger">⏏ Menú Principal</button>
+        </div>
+    </div>
+
+    <!-- Inventory Screen -->
+    <div id="inventory-screen" class="screen hidden">
+        <div id="inventory-box">
+            <div id="inv-top">
+                <!-- 2x2 crafting -->
+                <div id="craft-2x2-area">
+                    <h3>Crafteo</h3>
+                    <div id="craft-grid-2x2"></div>
+                    <div id="craft-arrow-2x2">➜</div>
+                    <div id="craft-output-2x2" class="item-slot output-slot" data-slot="output"></div>
+                </div>
+                <!-- Equipment -->
+                <div id="equipment-area">
+                    <h3>Equipo</h3>
+                    <div id="armor-slots"></div>
+                </div>
+            </div>
+            <!-- Full inventory grid -->
+            <div id="inventory-grid"></div>
+            <!-- Hotbar row inside inventory -->
+            <div id="inv-hotbar"></div>
+        </div>
+    </div>
+
+    <!-- Crafting Table Screen -->
+    <div id="crafting-table-screen" class="screen hidden">
+        <div id="crafting-box">
+            <h2>Mesa de Crafteo</h2>
+            <div id="craft-area-3x3">
+                <div id="craft-grid-3x3"></div>
+                <div id="craft-arrow-3x3">➜</div>
+                <div id="craft-output-3x3" class="item-slot output-slot" data-slot="output"></div>
+            </div>
+            <div id="ct-inventory-grid"></div>
+            <div id="ct-hotbar"></div>
+            <button id="btn-close-crafting" class="menu-btn" style="margin-top:1rem;">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Block Break Overlay -->
+    <canvas id="break-overlay" class="hidden"></canvas>
+
+</body>
+
+</html>
