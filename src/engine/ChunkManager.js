@@ -29,14 +29,17 @@ export class ChunkManager {
             map: this.atlas,
             side: THREE.FrontSide,
             transparent: false,   // ← solid blocks are fully opaque
+            vertexColors: true,
         });
         // Separate material for transparent blocks (leaves, glass, water)
         this.transparentMaterial = new THREE.MeshLambertMaterial({
             map: this.atlas,
             side: THREE.DoubleSide,
             transparent: true,
-            opacity: 0.82,
-            alphaTest: 0.05,
+            opacity: 0.85,
+            alphaTest: 0.1,
+            vertexColors: true,
+            depthWrite: false,
         });
     }
 
@@ -130,13 +133,13 @@ export class ChunkManager {
     }
 
     _onWorkerResult({ data }) {
-        const { chunkX, chunkZ, positions, normals, uvs, indices } = data;
+        const { chunkX, chunkZ, positions, normals, uvs, colors, indices, opaqueCount, transpCount } = data;
         const key = this._key(chunkX, chunkZ);
 
         // Free worker
         const wi = data._wi ?? 0;
         // find which worker sent this
-        this.workerBusy.fill(false); // simple reset
+        this.workerBusy[wi] = false;
         this.pending.delete(key);
 
         // Process next in queue
@@ -158,10 +161,16 @@ export class ChunkManager {
         geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         geo.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
         geo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+        if (colors) geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         geo.setIndex(new THREE.BufferAttribute(indices, 1));
+
+        // Multi-material mapping
+        geo.addGroup(0, opaqueCount, 0);
+        geo.addGroup(opaqueCount, transpCount, 1);
+
         geo.computeBoundingBox();
 
-        const mesh = new THREE.Mesh(geo, this.material);
+        const mesh = new THREE.Mesh(geo, [this.material, this.transparentMaterial]);
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         this.meshes.set(key, mesh);
