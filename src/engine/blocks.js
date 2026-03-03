@@ -41,68 +41,69 @@ export const T = {
     BOOKSHELF: 36, GLOWSTONE: 37, CACTUS_TOP: 38, CACTUS_SIDE: 39, CACTUS_BOTTOM: 40
 };
 
-// Block definitions: top/side/bottom tile, physics, drops
+// loot entries: { id, min, max, chance }
+// id < 100 = block ID, id >= 100 = item ID (from ITEM below)
 export const BLOCK_DEF = [
     // 0 AIR
-    { name: 'Air', solid: false, transparent: true, top: T.DIRT, side: T.DIRT, bot: T.DIRT, drop: 0, stack: 0, color: 'transparent' },
-    // 1 GRASS
-    { name: 'Grass Block', solid: true, transparent: false, top: T.GRASS_TOP, side: T.GRASS_SIDE, bot: T.DIRT, drop: 2, stack: 64, color: '#5D8A3C' },
+    { name: 'Air', solid: false, transparent: true, hardness: 0, top: T.DIRT, side: T.DIRT, bot: T.DIRT, loot: [], stack: 0, color: 'transparent' },
+    // 1 GRASS → drops dirt
+    { name: 'Grass Block', solid: true, transparent: false, hardness: 0.6, top: T.GRASS_TOP, side: T.GRASS_SIDE, bot: T.DIRT, loot: [{ id: 2, min: 1, max: 1, chance: 1 }], stack: 64, color: '#5D8A3C' },
     // 2 DIRT
-    { name: 'Dirt', solid: true, transparent: false, top: T.DIRT, side: T.DIRT, bot: T.DIRT, drop: 2, stack: 64, color: '#8B6343' },
-    // 3 STONE
-    { name: 'Stone', solid: true, transparent: false, top: T.STONE, side: T.STONE, bot: T.STONE, drop: 4, stack: 64, color: '#8A8A8A' },
+    { name: 'Dirt', solid: true, transparent: false, hardness: 0.5, top: T.DIRT, side: T.DIRT, bot: T.DIRT, loot: [{ id: 2, min: 1, max: 1, chance: 1 }], stack: 64, color: '#8B6343' },
+    // 3 STONE → drops cobblestone
+    { name: 'Stone', solid: true, transparent: false, hardness: 1.5, top: T.STONE, side: T.STONE, bot: T.STONE, loot: [{ id: 4, min: 1, max: 1, chance: 1 }], stack: 64, color: '#8A8A8A' },
     // 4 COBBLESTONE
-    { name: 'Cobblestone', solid: true, transparent: false, top: T.COBBLESTONE, side: T.COBBLESTONE, bot: T.COBBLESTONE, drop: 4, stack: 64, color: '#666666' },
+    { name: 'Cobblestone', solid: true, transparent: false, hardness: 2.0, top: T.COBBLESTONE, side: T.COBBLESTONE, bot: T.COBBLESTONE, loot: [{ id: 4, min: 1, max: 1, chance: 1 }], stack: 64, color: '#666666' },
     // 5 SAND
-    { name: 'Sand', solid: true, transparent: false, top: T.SAND, side: T.SAND, bot: T.SAND, drop: 5, stack: 64, color: '#D4CA80' },
-    // 6 GRAVEL
-    { name: 'Gravel', solid: true, transparent: false, top: T.GRAVEL, side: T.GRAVEL, bot: T.GRAVEL, drop: 6, stack: 64, color: '#9090A0' },
+    { name: 'Sand', solid: true, transparent: false, hardness: 0.5, top: T.SAND, side: T.SAND, bot: T.SAND, loot: [{ id: 5, min: 1, max: 1, chance: 1 }], stack: 64, color: '#D4CA80' },
+    // 6 GRAVEL → 10% flint, else gravel
+    { name: 'Gravel', solid: true, transparent: false, hardness: 0.6, top: T.GRAVEL, side: T.GRAVEL, bot: T.GRAVEL, loot: [{ id: 105, min: 1, max: 1, chance: 0.1 }, { id: 6, min: 1, max: 1, chance: 0.9 }], stack: 64, color: '#9090A0' },
     // 7 WOOD (log)
-    { name: 'Wood', solid: true, transparent: false, top: T.LOG_TOP, side: T.LOG_SIDE, bot: T.LOG_TOP, drop: 7, stack: 64, color: '#5C3D1E' },
-    // 8 LEAVES
-    { name: 'Leaves', solid: true, transparent: true, top: T.LEAVES, side: T.LEAVES, bot: T.LEAVES, drop: 0, stack: 64, color: '#2D6A1E' },
+    { name: 'Wood', solid: true, transparent: false, hardness: 2.0, top: T.LOG_TOP, side: T.LOG_SIDE, bot: T.LOG_TOP, loot: [{ id: 7, min: 1, max: 1, chance: 1 }], stack: 64, color: '#5C3D1E' },
+    // 8 LEAVES → nothing
+    { name: 'Leaves', solid: true, transparent: true, cutout: true, hardness: 0.2, top: T.LEAVES, side: T.LEAVES, bot: T.LEAVES, loot: [], stack: 64, color: '#2D6A1E' },
     // 9 PLANKS
-    { name: 'Planks', solid: true, transparent: false, top: T.PLANKS, side: T.PLANKS, bot: T.PLANKS, drop: 9, stack: 64, color: '#B8935A' },
-    // 10 GLASS
-    { name: 'Glass', solid: true, transparent: true, top: T.GLASS, side: T.GLASS, bot: T.GLASS, drop: 0, stack: 64, color: '#A0C8E0' },
+    { name: 'Planks', solid: true, transparent: false, hardness: 2.0, top: T.PLANKS, side: T.PLANKS, bot: T.PLANKS, loot: [{ id: 9, min: 1, max: 1, chance: 1 }], stack: 64, color: '#B8935A' },
+    // 10 GLASS → nothing
+    { name: 'Glass', solid: true, transparent: true, cutout: true, hardness: 0.3, top: T.GLASS, side: T.GLASS, bot: T.GLASS, loot: [], stack: 64, color: '#A0C8E0' },
     // 11 BRICK
-    { name: 'Bricks', solid: true, transparent: false, top: T.BRICK, side: T.BRICK, bot: T.BRICK, drop: 11, stack: 64, color: '#9E4E3C' },
-    // 12 BEDROCK
-    { name: 'Bedrock', solid: true, transparent: false, top: T.BEDROCK, side: T.BEDROCK, bot: T.BEDROCK, drop: 0, stack: 64, color: '#333333' },
+    { name: 'Bricks', solid: true, transparent: false, hardness: 2.0, top: T.BRICK, side: T.BRICK, bot: T.BRICK, loot: [{ id: 11, min: 1, max: 1, chance: 1 }], stack: 64, color: '#9E4E3C' },
+    // 12 BEDROCK → unbreakable
+    { name: 'Bedrock', solid: true, transparent: false, hardness: Infinity, top: T.BEDROCK, side: T.BEDROCK, bot: T.BEDROCK, loot: [], stack: 64, color: '#333333' },
     // 13 WATER
-    { name: 'Water', solid: false, transparent: true, top: T.WATER, side: T.WATER, bot: T.WATER, drop: 0, stack: 0, color: '#1A5BBC' },
+    { name: 'Water', solid: false, transparent: true, hardness: 0, top: T.WATER, side: T.WATER, bot: T.WATER, loot: [], stack: 0, color: '#1A5BBC' },
     // 14 CRAFTING TABLE
-    { name: 'Crafting Table', solid: true, transparent: false, top: T.CRAFT_TOP, side: T.CRAFT_SIDE, bot: T.PLANKS, drop: 14, stack: 64, color: '#7B5C35' },
+    { name: 'Crafting Table', solid: true, transparent: false, hardness: 2.5, top: T.CRAFT_TOP, side: T.CRAFT_SIDE, bot: T.PLANKS, loot: [{ id: 14, min: 1, max: 1, chance: 1 }], stack: 64, color: '#7B5C35' },
     // 15 FURNACE
-    { name: 'Furnace', solid: true, transparent: false, top: T.FURNACE_TOP, side: T.FURNACE_SIDE, bot: T.STONE, drop: 15, stack: 64, color: '#555555' },
-    // 16 CHEST (Barrel)
-    { name: 'Chest', solid: true, transparent: false, top: T.CHEST_TOP, side: T.CHEST_SIDE, bot: T.CHEST_BOTTOM, drop: 16, stack: 64, color: '#9C6B1A' },
+    { name: 'Furnace', solid: true, transparent: false, hardness: 3.5, top: T.FURNACE_TOP, side: T.FURNACE_SIDE, bot: T.STONE, loot: [{ id: 15, min: 1, max: 1, chance: 1 }], stack: 64, color: '#555555' },
+    // 16 CHEST
+    { name: 'Chest', solid: true, transparent: false, hardness: 2.5, top: T.CHEST_TOP, side: T.CHEST_SIDE, bot: T.CHEST_BOTTOM, loot: [{ id: 16, min: 1, max: 1, chance: 1 }], stack: 64, color: '#9C6B1A' },
     // 17 GOLD ORE
-    { name: 'Gold Ore', solid: true, transparent: false, top: T.GOLD_ORE, side: T.GOLD_ORE, bot: T.GOLD_ORE, drop: 17, stack: 64, color: '#C8A800' },
+    { name: 'Gold Ore', solid: true, transparent: false, hardness: 3.0, top: T.GOLD_ORE, side: T.GOLD_ORE, bot: T.GOLD_ORE, loot: [{ id: 17, min: 1, max: 1, chance: 1 }], stack: 64, color: '#C8A800' },
     // 18 IRON ORE
-    { name: 'Iron Ore', solid: true, transparent: false, top: T.IRON_ORE, side: T.IRON_ORE, bot: T.IRON_ORE, drop: 18, stack: 64, color: '#C08060' },
-    // 19 COAL ORE
-    { name: 'Coal Ore', solid: true, transparent: false, top: T.COAL_ORE, side: T.COAL_ORE, bot: T.COAL_ORE, drop: 19, stack: 64, color: '#444444' },
-    // 20 DIAMOND ORE
-    { name: 'Diamond Ore', solid: true, transparent: false, top: T.DIAMOND_ORE, side: T.DIAMOND_ORE, bot: T.DIAMOND_ORE, drop: 20, stack: 64, color: '#20C8C0' },
+    { name: 'Iron Ore', solid: true, transparent: false, hardness: 3.0, top: T.IRON_ORE, side: T.IRON_ORE, bot: T.IRON_ORE, loot: [{ id: 18, min: 1, max: 1, chance: 1 }], stack: 64, color: '#C08060' },
+    // 19 COAL ORE → drops coal item (id 101)
+    { name: 'Coal Ore', solid: true, transparent: false, hardness: 3.0, top: T.COAL_ORE, side: T.COAL_ORE, bot: T.COAL_ORE, loot: [{ id: 101, min: 1, max: 2, chance: 1 }], stack: 64, color: '#444444' },
+    // 20 DIAMOND ORE → drops diamond (id 104)
+    { name: 'Diamond Ore', solid: true, transparent: false, hardness: 3.0, top: T.DIAMOND_ORE, side: T.DIAMOND_ORE, bot: T.DIAMOND_ORE, loot: [{ id: 104, min: 1, max: 1, chance: 1 }], stack: 64, color: '#20C8C0' },
     // 21 GOLD BLOCK
-    { name: 'Gold Block', solid: true, transparent: false, top: T.GOLD_BLOCK, side: T.GOLD_BLOCK, bot: T.GOLD_BLOCK, drop: 21, stack: 64, color: '#F5D000' },
+    { name: 'Gold Block', solid: true, transparent: false, hardness: 3.0, top: T.GOLD_BLOCK, side: T.GOLD_BLOCK, bot: T.GOLD_BLOCK, loot: [{ id: 21, min: 1, max: 1, chance: 1 }], stack: 64, color: '#F5D000' },
     // 22 IRON BLOCK
-    { name: 'Iron Block', solid: true, transparent: false, top: T.IRON_BLOCK, side: T.IRON_BLOCK, bot: T.IRON_BLOCK, drop: 22, stack: 64, color: '#CCCCCC' },
+    { name: 'Iron Block', solid: true, transparent: false, hardness: 5.0, top: T.IRON_BLOCK, side: T.IRON_BLOCK, bot: T.IRON_BLOCK, loot: [{ id: 22, min: 1, max: 1, chance: 1 }], stack: 64, color: '#CCCCCC' },
     // 23 DIAMOND BLOCK
-    { name: 'Diamond Block', solid: true, transparent: false, top: T.DIAMOND_BLOCK, side: T.DIAMOND_BLOCK, bot: T.DIAMOND_BLOCK, drop: 23, stack: 64, color: '#2ECEC8' },
+    { name: 'Diamond Block', solid: true, transparent: false, hardness: 5.0, top: T.DIAMOND_BLOCK, side: T.DIAMOND_BLOCK, bot: T.DIAMOND_BLOCK, loot: [{ id: 23, min: 1, max: 1, chance: 1 }], stack: 64, color: '#2ECEC8' },
     // 24 SNOW
-    { name: 'Snow', solid: true, transparent: false, top: T.SNOW, side: T.SNOW, bot: T.DIRT, drop: 24, stack: 64, color: '#F0F0F8' },
-    // 25 ICE
-    { name: 'Ice', solid: true, transparent: true, top: T.ICE, side: T.ICE, bot: T.ICE, drop: 0, stack: 64, color: '#8AB5D4' },
+    { name: 'Snow', solid: true, transparent: false, hardness: 0.2, top: T.SNOW, side: T.SNOW, bot: T.DIRT, loot: [{ id: 24, min: 1, max: 1, chance: 1 }], stack: 64, color: '#F0F0F8' },
+    // 25 ICE → nothing
+    { name: 'Ice', solid: true, transparent: true, hardness: 0.5, top: T.ICE, side: T.ICE, bot: T.ICE, loot: [], stack: 64, color: '#8AB5D4' },
     // 26 TNT
-    { name: 'TNT', solid: true, transparent: false, top: T.TNT_TOP, side: T.TNT_SIDE, bot: T.TNT_BOTTOM, drop: 26, stack: 64, color: '#CC2222' },
-    // 27 BOOKSHELF
-    { name: 'Bookshelf', solid: true, transparent: false, top: T.PLANKS, side: T.BOOKSHELF, bot: T.PLANKS, drop: 27, stack: 64, color: '#7B5A3E' },
-    // 28 GLOWSTONE
-    { name: 'Glowstone', solid: true, transparent: false, top: T.GLOWSTONE, side: T.GLOWSTONE, bot: T.GLOWSTONE, drop: 28, stack: 64, color: '#F0D060' },
+    { name: 'TNT', solid: true, transparent: false, hardness: 0, top: T.TNT_TOP, side: T.TNT_SIDE, bot: T.TNT_BOTTOM, loot: [{ id: 26, min: 1, max: 1, chance: 1 }], stack: 64, color: '#CC2222' },
+    // 27 BOOKSHELF → drops 3 planks
+    { name: 'Bookshelf', solid: true, transparent: false, hardness: 1.5, top: T.PLANKS, side: T.BOOKSHELF, bot: T.PLANKS, loot: [{ id: 9, min: 3, max: 3, chance: 1 }], stack: 64, color: '#7B5A3E' },
+    // 28 GLOWSTONE → drops 2-4 itself
+    { name: 'Glowstone', solid: true, transparent: false, hardness: 0.3, top: T.GLOWSTONE, side: T.GLOWSTONE, bot: T.GLOWSTONE, loot: [{ id: 28, min: 2, max: 4, chance: 1 }], stack: 64, color: '#F0D060' },
     // 29 CACTUS
-    { name: 'Cactus', solid: true, transparent: false, top: T.CACTUS_TOP, side: T.CACTUS_SIDE, bot: T.CACTUS_BOTTOM, drop: 29, stack: 64, color: '#2A7A2A' },
+    { name: 'Cactus', solid: true, transparent: false, hardness: 0.4, top: T.CACTUS_TOP, side: T.CACTUS_SIDE, bot: T.CACTUS_BOTTOM, loot: [{ id: 29, min: 1, max: 1, chance: 1 }], stack: 64, color: '#2A7A2A' },
 ];
 
 export const ITEM = {
@@ -116,31 +117,31 @@ export const ITEM = {
 };
 
 export const ITEM_DEF = {
-    [ITEM.STICK]: { name: 'Stick', color: '#8B6343', stack: 64 },
-    [ITEM.COAL]: { name: 'Coal', color: '#222222', stack: 64 },
-    [ITEM.IRON_INGOT]: { name: 'Iron Ingot', color: '#DDDDDD', stack: 64 },
-    [ITEM.GOLD_INGOT]: { name: 'Gold Ingot', color: '#F5D000', stack: 64 },
-    [ITEM.DIAMOND]: { name: 'Diamond', color: '#2ECEC8', stack: 64 },
-    [ITEM.FLINT]: { name: 'Flint', color: '#666677', stack: 64 },
-    [ITEM.WOODEN_PICKAXE]: { name: 'Wooden Pickaxe', color: '#B8935A', stack: 1 },
-    [ITEM.STONE_PICKAXE]: { name: 'Stone Pickaxe', color: '#8A8A8A', stack: 1 },
-    [ITEM.IRON_PICKAXE]: { name: 'Iron Pickaxe', color: '#CCCCCC', stack: 1 },
-    [ITEM.GOLD_PICKAXE]: { name: 'Gold Pickaxe', color: '#F5D000', stack: 1 },
-    [ITEM.DIAMOND_PICKAXE]: { name: 'Diamond Pickaxe', color: '#2ECEC8', stack: 1 },
-    [ITEM.WOODEN_AXE]: { name: 'Wooden Axe', color: '#B8935A', stack: 1 },
-    [ITEM.STONE_AXE]: { name: 'Stone Axe', color: '#8A8A8A', stack: 1 },
-    [ITEM.IRON_AXE]: { name: 'Iron Axe', color: '#CCCCCC', stack: 1 },
-    [ITEM.WOODEN_SHOVEL]: { name: 'Wooden Shovel', color: '#B8935A', stack: 1 },
-    [ITEM.STONE_SHOVEL]: { name: 'Stone Shovel', color: '#8A8A8A', stack: 1 },
-    [ITEM.IRON_SHOVEL]: { name: 'Iron Shovel', color: '#CCCCCC', stack: 1 },
-    [ITEM.WOODEN_SWORD]: { name: 'Wooden Sword', color: '#B8935A', stack: 1 },
-    [ITEM.STONE_SWORD]: { name: 'Stone Sword', color: '#8A8A8A', stack: 1 },
-    [ITEM.IRON_SWORD]: { name: 'Iron Sword', color: '#CCCCCC', stack: 1 },
-    [ITEM.DIAMOND_SWORD]: { name: 'Diamond Sword', color: '#2ECEC8', stack: 1 },
-    [ITEM.WOODEN_HOE]: { name: 'Wooden Hoe', color: '#B8935A', stack: 1 },
-    [ITEM.STONE_HOE]: { name: 'Stone Hoe', color: '#8A8A8A', stack: 1 },
-    [ITEM.BOWL]: { name: 'Bowl', color: '#8B6343', stack: 64 },
-    [ITEM.TORCH_ITEM]: { name: 'Torch', color: '#FFC040', stack: 64 },
+    [100]: { name: 'Stick', color: '#8B6343', stack: 64 },
+    [101]: { name: 'Coal', color: '#222222', stack: 64 },
+    [102]: { name: 'Iron Ingot', color: '#DDDDDD', stack: 64 },
+    [103]: { name: 'Gold Ingot', color: '#F5D000', stack: 64 },
+    [104]: { name: 'Diamond', color: '#2ECEC8', stack: 64 },
+    [105]: { name: 'Flint', color: '#666677', stack: 64 },
+    [110]: { name: 'Wooden Pickaxe', color: '#B8935A', stack: 1 },
+    [111]: { name: 'Stone Pickaxe', color: '#8A8A8A', stack: 1 },
+    [112]: { name: 'Iron Pickaxe', color: '#CCCCCC', stack: 1 },
+    [113]: { name: 'Gold Pickaxe', color: '#F5D000', stack: 1 },
+    [114]: { name: 'Diamond Pickaxe', color: '#2ECEC8', stack: 1 },
+    [115]: { name: 'Wooden Axe', color: '#B8935A', stack: 1 },
+    [116]: { name: 'Stone Axe', color: '#8A8A8A', stack: 1 },
+    [117]: { name: 'Iron Axe', color: '#CCCCCC', stack: 1 },
+    [120]: { name: 'Wooden Shovel', color: '#B8935A', stack: 1 },
+    [121]: { name: 'Stone Shovel', color: '#8A8A8A', stack: 1 },
+    [122]: { name: 'Iron Shovel', color: '#CCCCCC', stack: 1 },
+    [125]: { name: 'Wooden Sword', color: '#B8935A', stack: 1 },
+    [126]: { name: 'Stone Sword', color: '#8A8A8A', stack: 1 },
+    [127]: { name: 'Iron Sword', color: '#CCCCCC', stack: 1 },
+    [128]: { name: 'Diamond Sword', color: '#2ECEC8', stack: 1 },
+    [130]: { name: 'Wooden Hoe', color: '#B8935A', stack: 1 },
+    [131]: { name: 'Stone Hoe', color: '#8A8A8A', stack: 1 },
+    [140]: { name: 'Bowl', color: '#8B6343', stack: 64 },
+    [141]: { name: 'Torch', color: '#FFC040', stack: 64 },
 };
 
 export function getItemDef(id) {

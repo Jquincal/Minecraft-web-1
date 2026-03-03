@@ -33,6 +33,41 @@
         </div>
     </div>
 
+    <!-- Mode Selection Screen -->
+    <div id="mode-select" class="overlay hidden">
+        <div id="mode-select-content">
+            <h1 id="mode-title">Seleccionar Modo de Juego</h1>
+            <div id="mode-cards">
+                <div class="mode-card" id="btn-survival">
+                    <div class="mode-icon">⚔</div>
+                    <h2>Supervivencia</h2>
+                    <p>Recolecta recursos, craftea herramientas, gestiona tu hambre y salud.</p>
+                    <ul class="mode-features">
+                        <li>⛏ Minar con tiempo real</li>
+                        <li>🍖 Sistema de hambre</li>
+                        <li>❤ Salud y regeneración</li>
+                        <li>💎 Drops de recursos</li>
+                    </ul>
+                    <button class="mode-select-btn">Supervivencia</button>
+                </div>
+                <div class="mode-card" id="btn-creative">
+                    <div class="mode-icon">✦</div>
+                    <h2>Creativo</h2>
+                    <p>Inventario infinito, vuelo libre y sin limitaciones. Construye sin restricciones.</p>
+                    <ul class="mode-features">
+                        <li>∞ Inventario ilimitado</li>
+                        <li>✈ Vuelo libre (doble espacio)</li>
+                        <li>⚡ Romper bloques al instante</li>
+                        <li>🛡 Sin hambre ni daño</li>
+                    </ul>
+                    <button class="mode-select-btn creative">Creativo</button>
+                </div>
+            </div>
+            <button id="btn-mode-back" class="menu-btn" style="margin-top:2rem">← Volver</button>
+        </div>
+    </div>
+
+
     <!-- Settings Modal -->
     <div id="settings-modal" class="modal hidden">
         <div class="modal-box">

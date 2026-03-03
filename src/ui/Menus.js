@@ -1,3 +1,14 @@
+export class ModeSelectScreen {
+    constructor({ onSelect, onBack }) {
+        this.el = document.getElementById('mode-select');
+        document.getElementById('btn-survival').addEventListener('click', () => onSelect('survival'));
+        document.getElementById('btn-creative').addEventListener('click', () => onSelect('creative'));
+        document.getElementById('btn-mode-back').addEventListener('click', onBack);
+    }
+    show() { this.el.classList.remove('hidden'); }
+    hide() { this.el.classList.add('hidden'); }
+}
+
 export class MainMenu {
     constructor({ onPlay, onSettings, onCredits }) {
         this.el = document.getElementById('main-menu');

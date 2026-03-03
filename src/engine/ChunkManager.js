@@ -24,22 +24,33 @@ export class ChunkManager {
             this.workerBusy.push(false);
         }
 
-        // Opaque material for solid blocks — NO transparency at all
+        // 1: Fully opaque blocks (stone, dirt, wood...)
         this.material = new THREE.MeshLambertMaterial({
             map: this.atlas,
             side: THREE.FrontSide,
-            transparent: false,   // ← solid blocks are fully opaque
+            transparent: false,
+            depthWrite: true,
             vertexColors: true,
         });
-        // Separate material for transparent blocks (leaves, glass, water)
+        // 2: Cutout blocks (leaves, glass) — alphaTest, NOT real transparency
+        //    This MUST use transparent:false + alphaTest so depth sorting is skipped
+        this.cutoutMaterial = new THREE.MeshLambertMaterial({
+            map: this.atlas,
+            side: THREE.DoubleSide,
+            transparent: false,
+            alphaTest: 0.5,
+            depthWrite: true,
+            vertexColors: true,
+        });
+        // 3: True transparent blocks (water, ice) — depthWrite:false
         this.transparentMaterial = new THREE.MeshLambertMaterial({
             map: this.atlas,
             side: THREE.DoubleSide,
             transparent: true,
             opacity: 0.85,
-            alphaTest: 0.1,
-            vertexColors: true,
             depthWrite: false,
+            blending: THREE.NormalBlending,
+            vertexColors: true,
         });
     }
 
@@ -133,7 +144,7 @@ export class ChunkManager {
     }
 
     _onWorkerResult({ data }) {
-        const { chunkX, chunkZ, positions, normals, uvs, colors, indices, opaqueCount, transpCount } = data;
+        const { chunkX, chunkZ, positions, normals, uvs, colors, indices, opaqueCount, cutoutCount, transpCount } = data;
         const key = this._key(chunkX, chunkZ);
 
         // Free worker
@@ -164,13 +175,14 @@ export class ChunkManager {
         if (colors) geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         geo.setIndex(new THREE.BufferAttribute(indices, 1));
 
-        // Multi-material mapping
+        // 3 material groups: opaque | cutout | transparent
         geo.addGroup(0, opaqueCount, 0);
-        geo.addGroup(opaqueCount, transpCount, 1);
+        geo.addGroup(opaqueCount, cutoutCount, 1);
+        geo.addGroup(opaqueCount + cutoutCount, transpCount, 2);
 
         geo.computeBoundingBox();
 
-        const mesh = new THREE.Mesh(geo, [this.material, this.transparentMaterial]);
+        const mesh = new THREE.Mesh(geo, [this.material, this.cutoutMaterial, this.transparentMaterial]);
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         this.meshes.set(key, mesh);

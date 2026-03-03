@@ -4,7 +4,7 @@ import { Player } from './engine/Player.js';
 import { ChunkManager } from './engine/ChunkManager.js';
 import { buildTextureAtlas } from './assets/TextureAtlas.js';
 import { HUD } from './ui/HUD.js';
-import { MainMenu, LoadingScreen, PauseMenu, SettingsModal, CreditsModal } from './ui/Menus.js';
+import { MainMenu, ModeSelectScreen, LoadingScreen, PauseMenu, SettingsModal, CreditsModal } from './ui/Menus.js';
 import { InventoryScreen, CraftingTableScreen } from './ui/InventoryScreens.js';
 
 // ──────────────────────────────────────────────────────────
@@ -60,9 +60,14 @@ let world, player, chunkManager, hud, invScreen, craftScreen;
 const loadingScreen = new LoadingScreen();
 
 const mainMenu = new MainMenu({
-    onPlay: startGame,
+    onPlay: () => { mainMenu.hide(); modeSelect.show(); },
     onSettings: () => settingsModal.show(),
     onCredits: () => creditsModal.show(),
+});
+
+const modeSelect = new ModeSelectScreen({
+    onSelect: (mode) => { modeSelect.hide(); startGame(mode); },
+    onBack: () => { modeSelect.hide(); mainMenu.show(); },
 });
 
 const pauseMenu = new PauseMenu({
@@ -85,8 +90,7 @@ const creditsModal = new CreditsModal();
 // ──────────────────────────────────────────────────────────
 // Game lifecycle
 // ──────────────────────────────────────────────────────────
-async function startGame() {
-    mainMenu.hide();
+async function startGame(mode = 'survival') {
     loadingScreen.show(0);
     state = STATE.LOADING;
 
@@ -98,8 +102,8 @@ async function startGame() {
     loadingScreen.setProgress(0.2);
     world = new World(Math.random());
 
-    // Create player
-    player = new Player(camera, world, canvas);
+    // Create player with mode
+    player = new Player(camera, world, canvas, mode);
 
     // Create chunk manager
     chunkManager = new ChunkManager(world, scene, atlas);

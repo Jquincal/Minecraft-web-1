@@ -36,21 +36,46 @@ const FACES = [
     // +Z front. Normal: [0, 0, 1]. Ortho axes X(0) and Y(1)
     { n: [0, 0, 1], c: [[0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]], t: 'side', a: 0, b: 1 },
     // -X left. Normal: [-1, 0, 0]. Ortho axes Z(2) and Y(1)
-    { n: [-1, 0, 0], c: [[0, 0, 1], [0, 0, 0], [0, 1, 0], [0, 1, 1]], t: 'side', a: 2, b: 1 },
+    // Corrected winding: CCW when viewed from outside (-X side)
+    { n: [-1, 0, 0], c: [[0, 0, 0], [0, 0, 1], [0, 1, 1], [0, 1, 0]], t: 'side', a: 2, b: 1 },
     // +X right. Normal: [1, 0, 0]. Ortho axes Z(2) and Y(1)
-    { n: [1, 0, 0], c: [[1, 0, 0], [1, 0, 1], [1, 1, 1], [1, 1, 0]], t: 'side', a: 2, b: 1 },
+    // Corrected winding: CCW when viewed from outside (+X side)
+    { n: [1, 0, 0], c: [[1, 0, 1], [1, 0, 0], [1, 1, 0], [1, 1, 1]], t: 'side', a: 2, b: 1 },
 ];
 
 function getB(blocks, nbrs, lx, ly, lz) {
     if (ly < 0 || ly >= CHUNK_HEIGHT) return 0;
     const S = CHUNK_SIZE, H = CHUNK_HEIGHT;
-    if (lx < 0) return nbrs.nx ? nbrs.nx[(lx + S) + ly * S + lz * S * H] : 0;
-    if (lx >= S) return nbrs.px ? nbrs.px[(lx - S) + ly * S + lz * S * H] : 0;
-    if (lz < 0) return nbrs.nz ? nbrs.nz[lx + ly * S + (lz + S) * S * H] : 0;
-    if (lz >= S) return nbrs.pz ? nbrs.pz[lx + ly * S + (lz - S) * S * H] : 0;
+    if (lx < 0) {
+        // Return 1 (solid) at unloaded neighbor border so faces are hidden correctly
+        if (!nbrs.nx) return 1;
+        return nbrs.nx[(lx + S) + ly * S + lz * S * H];
+    }
+    if (lx >= S) {
+        if (!nbrs.px) return 1;
+        return nbrs.px[(lx - S) + ly * S + lz * S * H];
+    }
+    if (lz < 0) {
+        if (!nbrs.nz) return 1;
+        return nbrs.nz[lx + ly * S + (lz + S) * S * H];
+    }
+    if (lz >= S) {
+        if (!nbrs.pz) return 1;
+        return nbrs.pz[lx + ly * S + (lz - S) * S * H];
+    }
     return blocks[lx + ly * S + lz * S * H];
 }
 
+// A face is hidden if the neighbor completely fills the space (solid, no transparency, no cutout)
+function isFaceHidden(nb2, nbDef) {
+    if (nb2 === 0) return false; // air → always show face
+    if (!nbDef || !nbDef.solid) return false; // non-solid → always show face
+    if (nbDef.transparent && !nbDef.cutout) return false; // true transparent (water) → show face
+    if (nbDef.transparent && nbDef.cutout) return false; // cutout (leaves/glass) → show face
+    return true; // fully opaque solid → hide face
+}
+
+// For AO: a block casts shadow at corners if it's a fully opaque solid
 function isOpaqueBlock(blocks, nbrs, lx, ly, lz) {
     const b = getB(blocks, nbrs, lx, ly, lz);
     if (!b) return false;
@@ -63,7 +88,7 @@ self.onmessage = function ({ data }) {
     const { chunkX, chunkZ, blocks, neighbors: nb, wx0, wz0, _wi } = data;
     const S = CHUNK_SIZE, H = CHUNK_HEIGHT;
 
-    const pos = [], norm = [], uvArr = [], col = [], idxOpaque = [], idxTransp = [];
+    const pos = [], norm = [], uvArr = [], col = [], idxOpaque = [], idxCutout = [], idxTransp = [];
     let vc = 0;
 
     for (let lz = 0; lz < S; lz++) {
@@ -81,10 +106,10 @@ self.onmessage = function ({ data }) {
                     const nb2 = getB(blocks, nb, nx, ny, nz);
                     const nbDef = BLOCK_DEF[nb2];
 
-                    // Face culling
-                    if (nb2 !== 0 && nbDef && nbDef.solid && !nbDef.transparent) continue;
+                    // Face culling: skip if neighbor hides this face
+                    if (isFaceHidden(nb2, nbDef)) continue;
 
-                    // Glass doesn't cull against other transparent blocks EXCEPT itself
+                    // Same-block culling for glass and water
                     if (def.transparent && nb2 === bid) continue;
 
                     const tile = def[f.t];
@@ -130,10 +155,15 @@ self.onmessage = function ({ data }) {
 
                         col.push(colorFinal, colorFinal, colorFinal);
                     }
-                    if (def.transparent) {
-                        idxTransp.push(vc, vc + 1, vc + 2, vc, vc + 2, vc + 3);
-                    } else {
+                    // Route face to the correct index bucket
+                    if (!def.transparent) {
                         idxOpaque.push(vc, vc + 1, vc + 2, vc, vc + 2, vc + 3);
+                    } else if (def.cutout) {
+                        // Cutout (leaves, glass): alphaTest rendering
+                        idxCutout.push(vc, vc + 1, vc + 2, vc, vc + 2, vc + 3);
+                    } else {
+                        // True transparent (water, ice): depthWrite=false rendering
+                        idxTransp.push(vc, vc + 1, vc + 2, vc, vc + 2, vc + 3);
                     }
                     vc += 4;
                 }
@@ -145,13 +175,15 @@ self.onmessage = function ({ data }) {
     const nArr = new Float32Array(norm);
     const uArr = new Float32Array(uvArr);
     const cArr = new Float32Array(col);
-    const iArr = new Uint32Array(idxOpaque.concat(idxTransp));
+    const iArr = new Uint32Array([...idxOpaque, ...idxCutout, ...idxTransp]);
 
     self.postMessage(
         {
             type: 'result', chunkX, chunkZ, _wi,
             positions: pArr, normals: nArr, uvs: uArr, colors: cArr, indices: iArr,
-            opaqueCount: idxOpaque.length, transpCount: idxTransp.length
+            opaqueCount: idxOpaque.length,
+            cutoutCount: idxCutout.length,
+            transpCount: idxTransp.length
         },
         [pArr.buffer, nArr.buffer, uArr.buffer, cArr.buffer, iArr.buffer]
     );
