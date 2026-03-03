@@ -57,6 +57,7 @@ let world, player, chunkManager, hud, invScreen, craftScreen;
 // ──────────────────────────────────────────────────────────
 // UI Setup
 // ──────────────────────────────────────────────────────────
+const menuBg = document.getElementById('menu-bg');
 const loadingScreen = new LoadingScreen();
 
 const mainMenu = new MainMenu({
@@ -91,55 +92,62 @@ const creditsModal = new CreditsModal();
 // Game lifecycle
 // ──────────────────────────────────────────────────────────
 async function startGame(mode = 'survival') {
-    loadingScreen.show(0);
-    state = STATE.LOADING;
+    try {
+        loadingScreen.show(0);
+        state = STATE.LOADING;
+        if (menuBg) menuBg.classList.add('hidden');
 
-    // Build atlas
-    loadingScreen.setProgress(0.1);
-    const atlas = await buildTextureAtlas();
+        // Build atlas
+        loadingScreen.setProgress(0.1);
+        const atlas = await buildTextureAtlas();
 
-    // Create world
-    loadingScreen.setProgress(0.2);
-    world = new World(Math.random());
+        // Create world
+        loadingScreen.setProgress(0.2);
+        world = new World(Math.random());
 
-    // Create player with mode
-    player = new Player(camera, world, canvas, mode);
+        // Create player with mode
+        player = new Player(camera, world, canvas, mode);
 
-    // Create chunk manager
-    chunkManager = new ChunkManager(world, scene, atlas);
+        // Create chunk manager
+        chunkManager = new ChunkManager(world, scene, atlas);
 
-    // Pre-generate starting chunks
-    const spawnX = 0, spawnZ = 0;
-    let chunksGenerated = 0;
-    const totalChunks = 25;
-    for (let dz = -2; dz <= 2; dz++) {
-        for (let dx = -2; dx <= 2; dx++) {
-            world.generateChunk(dx, dz);
-            chunksGenerated++;
-            loadingScreen.setProgress(0.2 + 0.6 * (chunksGenerated / totalChunks));
-            await new Promise(r => setTimeout(r, 0)); // yield
+        // Pre-generate starting chunks
+        const spawnX = 0, spawnZ = 0;
+        let chunksGenerated = 0;
+        const totalChunks = 25;
+        for (let dz = -2; dz <= 2; dz++) {
+            for (let dx = -2; dx <= 2; dx++) {
+                world.generateChunk(dx, dz);
+                chunksGenerated++;
+                loadingScreen.setProgress(0.1 + 0.8 * (chunksGenerated / totalChunks));
+                await new Promise(r => setTimeout(r, 0)); // yield
+            }
         }
+
+        // Spawn player on top of terrain
+        const spawnY = world.groundY(spawnX + 8, spawnZ + 8) + 1;
+        player.pos.set(spawnX + 8, spawnY, spawnZ + 8);
+
+        // Build UI
+        hud = new HUD();
+        invScreen = new InventoryScreen(player);
+        craftScreen = new CraftingTableScreen(player);
+
+        // Input for pause/inventory
+        document.addEventListener('keydown', onGameKey);
+
+        loadingScreen.setProgress(1);
+        await new Promise(r => setTimeout(r, 300));
+
+        loadingScreen.hide();
+        hud.show();
+        state = STATE.PLAYING;
+        canvas.requestPointerLock();
+    } catch (err) {
+        console.error('Failed to start game:', err);
+        alert('Error al iniciar el juego: ' + err.message);
+        backToMenu();
     }
-
-    // Spawn player on top of terrain
-    const spawnY = world.groundY(spawnX + 8, spawnZ + 8) + 1;
-    player.pos.set(spawnX + 8, spawnY, spawnZ + 8);
-
-    // Build UI
-    hud = new HUD();
-    invScreen = new InventoryScreen(player);
-    craftScreen = new CraftingTableScreen(player);
-
-    // Input for pause/inventory
-    document.addEventListener('keydown', onGameKey);
-
-    loadingScreen.setProgress(1);
-    await new Promise(r => setTimeout(r, 300));
-
-    loadingScreen.hide();
-    hud.show();
-    state = STATE.PLAYING;
-    canvas.requestPointerLock();
 }
 
 function onGameKey(e) {
@@ -190,6 +198,7 @@ function backToMenu() {
     }
     world = null; player = null; chunkManager = null;
     state = STATE.MENU;
+    if (menuBg) menuBg.classList.remove('hidden');
     mainMenu.show();
 }
 

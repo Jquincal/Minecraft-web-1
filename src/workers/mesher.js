@@ -175,7 +175,12 @@ self.onmessage = function ({ data }) {
     const nArr = new Float32Array(norm);
     const uArr = new Float32Array(uvArr);
     const cArr = new Float32Array(col);
-    const iArr = new Uint32Array([...idxOpaque, ...idxCutout, ...idxTransp]);
+
+    // Safer concatenation for large arrays
+    const iArr = new Uint32Array(idxOpaque.length + idxCutout.length + idxTransp.length);
+    iArr.set(idxOpaque, 0);
+    iArr.set(idxCutout, idxOpaque.length);
+    iArr.set(idxTransp, idxOpaque.length + idxCutout.length);
 
     self.postMessage(
         {
