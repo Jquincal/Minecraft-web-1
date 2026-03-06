@@ -38,34 +38,43 @@
     <!-- Mode Selection Screen -->
     <div id="mode-select" class="overlay hidden">
         <div id="mode-select-content">
-            <h1 id="mode-title">Seleccionar Modo de Juego</h1>
+            <div class="mode-header">
+                <h1 id="mode-title">Seleccionar Modo</h1>
+                <p class="mode-subtitle">Elige cómo quieres jugar</p>
+            </div>
+
             <div id="mode-cards">
-                <div class="mode-card" id="btn-survival">
+                <div class="mode-card retro-card" id="btn-survival">
                     <div class="mode-icon">⚔</div>
-                    <h2>Supervivencia</h2>
-                    <p>Recolecta recursos, craftea herramientas, gestiona tu hambre y salud.</p>
-                    <ul class="mode-features">
-                        <li>⛏ Minar con tiempo real</li>
-                        <li>🍖 Sistema de hambre</li>
-                        <li>❤ Salud y regeneración</li>
-                        <li>💎 Drops de recursos</li>
-                    </ul>
-                    <button class="mode-select-btn">Supervivencia</button>
+                    <div class="mode-card-body">
+                        <h2>Supervivencia</h2>
+                        <p class="mode-desc">Recolecta recursos, craftea herramientas, gestiona tu hambre y salud.</p>
+                        <ul class="mode-features">
+                            <li>⛏ Minar con tiempo real</li>
+                            <li>🍖 Sistema de hambre</li>
+                            <li>❤ Salud y regeneración</li>
+                            <li>💎 Drops de recursos</li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="mode-card" id="btn-creative">
+
+                <div class="mode-card retro-card creative" id="btn-creative">
                     <div class="mode-icon">✦</div>
-                    <h2>Creativo</h2>
-                    <p>Inventario infinito, vuelo libre y sin limitaciones. Construye sin restricciones.</p>
-                    <ul class="mode-features">
-                        <li>∞ Inventario ilimitado</li>
-                        <li>✈ Vuelo libre (doble espacio)</li>
-                        <li>⚡ Romper bloques al instante</li>
-                        <li>🛡 Sin hambre ni daño</li>
-                    </ul>
-                    <button class="mode-select-btn creative">Creativo</button>
+                    <div class="mode-card-body">
+                        <h2>Creativo</h2>
+                        <p class="mode-desc">Inventario infinito, vuelo libre y sin limitaciones. Construye sin
+                            restricciones.</p>
+                        <ul class="mode-features">
+                            <li>∞ Inventario ilimitado</li>
+                            <li>✈ Vuelo libre (espacio x2)</li>
+                            <li>⚡ Romper al instante</li>
+                            <li>🛡 Sin hambre ni daño</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-            <button id="btn-mode-back" class="menu-btn" style="margin-top:2rem">← Volver</button>
+
+            <button id="btn-mode-back" class="menu-btn danger retro-btn-large">← Volver al Menú</button>
         </div>
     </div>
 
@@ -140,6 +149,25 @@
         <div id="controls-hint">
             WASD Mover · Espacio Saltar · Shift Agachar<br />
             Click Izq Romper · Click Der Colocar · E Inventario · ESC Pausa
+        </div>
+    </div>
+
+    <!-- Mobile Touch Controls (Hidden by default, shown on touch devices) -->
+    <div id="mobile-controls" class="hidden">
+        <div id="touch-pad-zone"></div>
+        <div id="joystick-zone">
+            <div id="joystick-base">
+                <div id="joystick-stick"></div>
+            </div>
+        </div>
+        <div id="action-buttons">
+            <button class="touch-btn" id="btn-touch-inv">🎒</button>
+            <button class="touch-btn" id="btn-touch-pause">⏸</button>
+            <div class="action-row">
+                <button class="touch-btn large" id="btn-touch-mine">⚒</button>
+                <button class="touch-btn large" id="btn-touch-place">🧱</button>
+                <button class="touch-btn large" id="btn-touch-jump">⤢</button>
+            </div>
         </div>
     </div>
 

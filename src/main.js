@@ -6,6 +6,7 @@ import { buildTextureAtlas } from './assets/TextureAtlas.js';
 import { HUD } from './ui/HUD.js';
 import { MainMenu, ModeSelectScreen, LoadingScreen, PauseMenu, SettingsModal, CreditsModal } from './ui/Menus.js';
 import { InventoryScreen, CraftingTableScreen } from './ui/InventoryScreens.js';
+import { MobileControls } from './ui/MobileControls.js';
 
 // ──────────────────────────────────────────────────────────
 // State Machine
@@ -52,7 +53,7 @@ scene.add(hlMesh);
 // ──────────────────────────────────────────────────────────
 // Game objects
 // ──────────────────────────────────────────────────────────
-let world, player, chunkManager, hud, invScreen, craftScreen;
+let world, player, chunkManager, hud, invScreen, craftScreen, mobileControls;
 
 // ──────────────────────────────────────────────────────────
 // UI Setup
@@ -132,6 +133,7 @@ async function startGame(mode = 'survival') {
         hud = new HUD();
         invScreen = new InventoryScreen(player);
         craftScreen = new CraftingTableScreen(player);
+        mobileControls = new MobileControls(player);
 
         // Input for pause/inventory
         document.addEventListener('keydown', onGameKey);
@@ -141,6 +143,7 @@ async function startGame(mode = 'survival') {
 
         loadingScreen.hide();
         hud.show();
+        if (mobileControls) mobileControls.show();
         state = STATE.PLAYING;
         canvas.requestPointerLock();
     } catch (err) {
@@ -167,21 +170,31 @@ function pauseGame() {
     state = STATE.PAUSED;
     document.exitPointerLock();
     pauseMenu.show();
+    hud.hide();
+    if (mobileControls) mobileControls.hide();
 }
 function resumeGame() {
     state = STATE.PLAYING;
     pauseMenu.hide();
+    invScreen.hide();
+    craftScreen.hide();
+    hud.show();
+    if (mobileControls) mobileControls.show();
     canvas.requestPointerLock();
 }
 function openInventory() {
     state = STATE.INVENTORY;
     document.exitPointerLock();
+    hud.hide();
+    if (mobileControls) mobileControls.hide();
     invScreen.show();
 }
 function closeScreens() {
     if (invScreen) invScreen.hide();
     if (craftScreen) craftScreen.hide();
     state = STATE.PLAYING;
+    hud.show();
+    if (mobileControls) mobileControls.show();
     canvas.requestPointerLock();
 }
 function backToMenu() {
@@ -191,6 +204,7 @@ function backToMenu() {
     hud.hide();
     if (invScreen) invScreen.hide();
     if (craftScreen) craftScreen.hide();
+    if (mobileControls) mobileControls.hide();
     // remove chunk meshes
     if (chunkManager) {
         for (const [, mesh] of chunkManager.meshes) { scene.remove(mesh); mesh.geometry.dispose(); }

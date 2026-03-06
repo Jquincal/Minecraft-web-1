@@ -124,11 +124,16 @@ export class Player {
         });
 
         this.canvas.addEventListener('mousedown', e => {
+            // Prevent pointer lock request if mobile controls are active (touch interface)
+            if (window.matchMedia('(pointer: coarse)').matches) return;
+
             if (!this.locked) { this.canvas.requestPointerLock(); return; }
             if (e.button === 0) this.breakHeld = true;
             if (e.button === 2) this._placeBlock();
         });
         this.canvas.addEventListener('mouseup', e => {
+            if (window.matchMedia('(pointer: coarse)').matches) return;
+
             if (e.button === 0) {
                 this.breakHeld = false;
                 this.breakProgress = 0;
@@ -138,6 +143,7 @@ export class Player {
         this.canvas.addEventListener('contextmenu', e => e.preventDefault());
 
         this.canvas.addEventListener('wheel', e => {
+            if (!this.locked && !window.matchMedia('(pointer: coarse)').matches) return;
             this.hotbarSlot = ((this.hotbarSlot + (e.deltaY > 0 ? 1 : -1)) + 9) % 9;
         });
     }
@@ -330,7 +336,10 @@ export class Player {
     // ── Main update ───────────────────────────────────────────────────────────
     update(dt) {
         this._dt = dt;
-        if (!this.locked) return;
+
+        // Mobile overrides lock requirement
+        const isMobile = window.matchMedia('(pointer: coarse)').matches;
+        if (!this.locked && !isMobile) return;
 
         this.sneaking = !!this.keys['ShiftLeft'];
         this.sprinting = !!this.keys['ControlLeft'];

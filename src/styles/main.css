@@ -213,6 +213,207 @@ body {
     accent-color: var(--grass);
 }
 
+/* ── MODE SELECT (PHASE 2 AESTHETICS) ── */
+#mode-select {
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+}
+
+#mode-select-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3.5rem;
+    width: 100%;
+    max-width: 1100px;
+    padding: 2rem;
+}
+
+.mode-header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    animation: dropIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes dropIn {
+    0% {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+#mode-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(1.4rem, 4vw, 2.5rem);
+    color: #fff;
+    text-shadow: 4px 4px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
+    letter-spacing: 2px;
+}
+
+.mode-subtitle {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(0.7rem, 2vw, 1rem);
+    color: #AAAAAA;
+    text-shadow: 2px 2px 0 #000;
+}
+
+#mode-cards {
+    display: flex;
+    gap: 3.5rem;
+    justify-content: center;
+    width: 100%;
+    flex-wrap: wrap;
+    perspective: 1000px;
+}
+
+.retro-card {
+    background: #1a1a1a;
+    border: 4px solid #fff;
+    /* 3D button effect classic */
+    border-top-color: #555;
+    border-left-color: #555;
+    border-bottom-color: #000;
+    border-right-color: #000;
+    padding: 2.5rem 2rem;
+    width: min(460px, 90vw);
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+    transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    cursor: pointer;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), inset 0 0 40px rgba(0, 0, 0, 0.8);
+}
+
+.retro-card:hover {
+    transform: translateY(-15px) scale(1.03);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(255, 255, 255, 0.05);
+    background: #222;
+}
+
+/* Base Theme Overrides on Hover */
+.retro-card:hover {
+    border-top-color: #5D8A3C;
+    border-left-color: #5D8A3C;
+    border-bottom-color: #1b3d0b;
+    border-right-color: #1b3d0b;
+}
+
+.retro-card.creative:hover {
+    border-top-color: #2ECEC8;
+    border-left-color: #2ECEC8;
+    border-bottom-color: #0d5f5c;
+    border-right-color: #0d5f5c;
+}
+
+.mode-icon {
+    font-size: 5rem;
+    filter: drop-shadow(4px 4px 0 #000);
+    transition: transform 0.3s ease;
+    margin-top: -10px;
+}
+
+.retro-card:hover .mode-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.retro-card.creative:hover .mode-icon {
+    transform: scale(1.1) rotate(-5deg);
+}
+
+.mode-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    width: 100%;
+    flex: 1;
+}
+
+.retro-card h2 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1.4rem;
+    color: #5D8A3C;
+    /* Brighter Minecraft Green */
+    text-shadow: 3px 3px 0 #000;
+    letter-spacing: 1px;
+}
+
+.retro-card.creative h2 {
+    color: #2ECEC8;
+    /* Diamond Cyan */
+}
+
+.mode-desc {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.75rem;
+    color: #DDDDDD;
+    line-height: 1.8;
+    min-height: 4rem;
+    /* keep consistent height */
+    text-shadow: 1px 1px 0 #000;
+}
+
+.mode-features {
+    list-style: none;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    background: rgba(0, 0, 0, 0.4);
+    /* Inset look for features */
+    border: 2px solid #000;
+    border-right-color: #444;
+    border-bottom-color: #444;
+    padding: 1.5rem 1rem;
+    margin-top: auto;
+}
+
+.mode-features li {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.7rem;
+    color: #BBBBBB;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    text-shadow: 1px 1px 0 #000;
+    line-height: 1.4;
+}
+
+.retro-card:hover .mode-features li {
+    color: #FFFFFF;
+}
+
+.retro-btn-large {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1rem;
+    padding: 1.2rem 3rem;
+    width: auto;
+    border: 4px solid;
+    border-top-color: #ff5555;
+    border-left-color: #ff5555;
+    border-bottom-color: #330000;
+    border-right-color: #330000;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.8);
+}
+
+.retro-btn-large:active {
+    border-top-color: #330000;
+    border-left-color: #330000;
+    border-bottom-color: #ff5555;
+    border-right-color: #ff5555;
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8);
+}
+
 /* ── LOADING ── */
 #loading-screen {
     background: #000;
@@ -412,9 +613,120 @@ body {
     right: 12px;
     font-size: .6rem;
     color: rgba(255, 255, 255, .45);
-    text-align: right;
     line-height: 1.6;
     text-shadow: 1px 1px 0 #000;
+}
+
+/* ── MOBILE TOUCH CONTROLS ── */
+@media (pointer: coarse) {
+
+    /* Hide the desktop controls hint */
+    #controls-hint {
+        display: none !important;
+    }
+
+    #mobile-controls {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        /* Extremely high to sit over everything */
+        display: flex;
+        pointer-events: none;
+        /* Let clicks pass through where there are no controls */
+    }
+
+    #mobile-controls.hidden {
+        display: none !important;
+    }
+
+    /* Invisible zone for swiping camera */
+    #touch-pad-zone {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: auto;
+        touch-action: none;
+    }
+
+    /* Joystick Area (Bottom Left) */
+    #joystick-zone {
+        position: absolute;
+        bottom: 2rem;
+        left: 2rem;
+        width: 150px;
+        height: 150px;
+        pointer-events: auto;
+        touch-action: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #joystick-base {
+        width: 120px;
+        height: 120px;
+        background: rgba(255, 255, 255, 0.15);
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        border-radius: 50%;
+        position: relative;
+    }
+
+    #joystick-stick {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+    }
+
+    /* Action Buttons Area (Bottom Right) */
+    #action-buttons {
+        position: absolute;
+        bottom: 2rem;
+        right: 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 1rem;
+        pointer-events: auto;
+    }
+
+    .action-row {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .touch-btn {
+        background: rgba(0, 0, 0, 0.4);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        color: white;
+        font-size: 1.5rem;
+        width: 55px;
+        height: 55px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+        touch-action: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    }
+
+    .touch-btn:active {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(0.95);
+    }
+
+    .touch-btn.large {
+        width: 75px;
+        height: 75px;
+        font-size: 2rem;
+    }
 }
 
 /* ── PAUSE MENU ── */
