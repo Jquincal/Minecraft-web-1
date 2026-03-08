@@ -6,9 +6,13 @@ export class HUD {
         this.fpsEl = document.getElementById('fps-counter');
         this.posEl = document.getElementById('pos-display');
         this.blkEl = document.getElementById('block-display');
+        // Elements
+        // Elements
         this.heartsEl = document.getElementById('health-hearts');
         this.hungerEl = document.getElementById('hunger-icons');
         this.hotbarEl = document.getElementById('hotbar-slots');
+        this.miningProgress = document.getElementById('mining-progress');
+        this.miningFill = document.getElementById('mining-fill');
 
         this._fps = 60; this._fpsAcc = 0; this._fpsFrames = 0;
         this._buildHotbar();
@@ -108,7 +112,11 @@ export class HUD {
 
         // Break progress indicator
         if (player.breakProgress > 0 && player.breakTarget) {
-            this.el.style.setProperty('--break-prog', player.breakProgress);
+            this.miningProgress.classList.remove('hidden');
+            this.miningFill.style.width = (player.breakProgress * 100) + '%';
+        } else {
+            this.miningProgress.classList.add('hidden');
+            this.miningFill.style.width = '0%';
         }
     }
 }

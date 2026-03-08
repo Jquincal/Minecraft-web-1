@@ -181,20 +181,30 @@ export class Player {
     /** Calculate break time in seconds based on hardness */
     _calcBreakTime(def) {
         if (!def || def.hardness === Infinity) return Infinity;
-        if (def.hardness === 0) return 0;
-        if (this.mode === 'creative') return 0;
-        // ticks = round(30 * hardness / miningSpeed), min 4 ticks
+
+        // Game mode multipliers for breaking speed
+        const BREAK_MULTIPLIERS = {
+            survival: 1.0,
+            creative: 0.0,
+            spectator: Infinity
+        };
+
+        const modeMultiplier = BREAK_MULTIPLIERS[this.mode] ?? 1.0;
+
+        if (modeMultiplier === 0 || def.hardness === 0) return 0;
+
         const miningSpeed = 1.0; // bare hands for now
-        const ticks = Math.max(4, Math.round(30 * def.hardness / miningSpeed));
-        return ticks / 20;
+        // Approximate Minecraft timing (1.5 seconds per hardness unit with bare hands)
+        const baseDuration = (def.hardness * 1.5) / miningSpeed;
+        return baseDuration * modeMultiplier;
     }
 
     _breakBlock() {
         if (!this.targeted) return;
-        const { x, y, z, id } = this.targeted;
+        const { pos, id } = this.targeted;
+        const { x, y, z } = pos;
         const def = getBlockDef(id);
 
-        // Bedrock: cannot be broken
         if (def.hardness === Infinity) { this.breakProgress = 0; return; }
 
         // New target?
@@ -204,28 +214,21 @@ export class Player {
             this._breakTime = this._calcBreakTime(def);
         }
 
-        // Creative breaks instantly
-        if (this.mode === 'creative') {
+        if (this._breakTime === Infinity) return;
+
+        // If duration is 0, break instantly
+        if (this._breakTime === 0) {
+            if (this.mode !== 'creative') this._rollLoot(def);
             this.world.setBlock(x, y, z, BLOCK.AIR);
             this.breakTarget = null;
             this.breakProgress = 0;
             return;
         }
 
-        // If break time is 0 (e.g. TNT), break instantly
-        if (this._breakTime <= 0) {
-            this._rollLoot(def);
-            this.world.setBlock(x, y, z, BLOCK.AIR);
-            this.breakTarget = null;
-            this.breakProgress = 0;
-            // Exhaust on block break
-            this._addExhaustion(0.005);
-            return;
-        }
-
+        // Gradual progress
         this.breakProgress += this._dt / this._breakTime;
-        if (this.breakProgress >= 1) {
-            this._rollLoot(def);
+        if (this.breakProgress >= 1.0) {
+            if (this.mode !== 'creative') this._rollLoot(def);
             this.world.setBlock(x, y, z, BLOCK.AIR);
             this.breakTarget = null;
             this.breakProgress = 0;

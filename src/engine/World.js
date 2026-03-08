@@ -1,4 +1,4 @@
-import { createNoise2D } from 'simplex-noise';
+import { createNoise2D, createNoise3D } from 'simplex-noise';
 import { BLOCK, BLOCK_DEF, CHUNK_SIZE, CHUNK_HEIGHT, SEA_LEVEL } from './blocks.js';
 
 export class World {
@@ -9,6 +9,12 @@ export class World {
         this.noise = createNoise2D(this._rng);
         this.noise2 = createNoise2D(this._rng);
         this.noise3 = createNoise2D(this._rng);
+        
+        // 3D Noise models for caves
+        this.noise3D = createNoise3D(this._rng); // Base cheese caves
+        this.noise3D_ridge1 = createNoise3D(this._rng); // Spaghetti caves layer 1
+        this.noise3D_ridge2 = createNoise3D(this._rng); // Spaghetti caves layer 2
+
         this.modified = new Set(); // chunk keys dirtied after generation
     }
 
@@ -24,13 +30,13 @@ export class World {
     generateChunk(cx, cz) {
         const SIZE = CHUNK_SIZE, H = CHUNK_HEIGHT;
         const blocks = new Uint8Array(SIZE * SIZE * H);
-        const { noise, noise2, noise3 } = this;
+        const { noise, noise2, noise3, noise3D, noise3D_ridge1, noise3D_ridge2 } = this;
 
         for (let lx = 0; lx < SIZE; lx++) {
             for (let lz = 0; lz < SIZE; lz++) {
                 const wx = cx * SIZE + lx, wz = cz * SIZE + lz;
 
-                // multi-octave height
+                // multi-octave height (surface)
                 const n1 = noise(wx * 0.008, wz * 0.008);
                 const n2 = noise2(wx * 0.03, wz * 0.03) * 0.4;
                 const n3 = noise3(wx * 0.1, wz * 0.1) * 0.1;
@@ -48,26 +54,73 @@ export class World {
                     const idx = lx + y * SIZE + lz * SIZE * H;
                     let b = BLOCK.AIR;
 
-                    if (y === 0) { b = BLOCK.BEDROCK; }
-                    else if (y <= height - 5) {
-                        b = BLOCK.STONE;
-                        // ore veins
-                        const ore = noise(wx * 0.15 + y * 0.3, wz * 0.15 + y * 0.2);
-                        if (y < 20 && ore > 0.7) b = BLOCK.DIAMOND_ORE;
-                        else if (y < 30 && ore > 0.6) b = BLOCK.GOLD_ORE;
-                        else if (ore > 0.55) b = BLOCK.IRON_ORE;
-                        else if (ore > 0.45) b = BLOCK.COAL_ORE;
+                    if (y === 0) { 
+                        b = BLOCK.BEDROCK; 
                     }
-                    else if (y < height) {
-                        b = isDesert ? BLOCK.SAND : BLOCK.DIRT;
-                    }
-                    else if (y === height) {
-                        if (isDesert) b = BLOCK.SAND;
-                        else if (isCold) b = BLOCK.SNOW;
-                        else b = BLOCK.GRASS;
+                    else if (y <= height) {
+                        // Candidate for solid ground
+                        let isSolid = true;
+
+                        // Cave carving logic (only process caves underground)
+                        if (y < height - 2 && y > 1) {
+                            // 1. Cheese Caves (Large open pockets)
+                            // Lower threshold means more caves. Scale controls size.
+                            const scale = 0.025;
+                            const cheeseVal = noise3D(wx * scale, y * scale, wz * scale);
+                            
+                            // Add fBm (octave) for rough edges
+                            const detail = noise3D(wx * scale * 2.5 + 100, y * scale * 2.5, wz * scale * 2.5) * 0.5;
+                            const combinedCheese = cheeseVal + detail;
+
+                            if (combinedCheese < -0.35) {
+                                isSolid = false;
+                            } else {
+                                // 2. Spaghetti Caves (Tunnels)
+                                // Intersection of two ridged noises
+                                const sScale = 0.035;
+                                const r1 = Math.abs(noise3D_ridge1(wx * sScale, y * sScale, wz * sScale));
+                                const r2 = Math.abs(noise3D_ridge2(wx * sScale + 1000, y * sScale + 1000, wz * sScale + 1000));
+                                
+                                // Where both are close to 0, they intersect
+                                const ridgeIntersect = r1 + r2;
+                                if (ridgeIntersect < 0.08) { // Tunnel width threshold
+                                    isSolid = false;
+                                }
+                            }
+                        }
+
+                        if (isSolid) {
+                            // Determine actual block type
+                            if (y <= height - 5) {
+                                b = BLOCK.STONE;
+                                // ore veins
+                                const ore = noise(wx * 0.15 + y * 0.3, wz * 0.15 + y * 0.2);
+                                if (y < 20 && ore > 0.7) b = BLOCK.DIAMOND_ORE;
+                                else if (y < 30 && ore > 0.6) b = BLOCK.GOLD_ORE;
+                                else if (ore > 0.55) b = BLOCK.IRON_ORE;
+                                else if (ore > 0.45) b = BLOCK.COAL_ORE;
+                            }
+                            else if (y < height) {
+                                b = isDesert ? BLOCK.SAND : BLOCK.DIRT;
+                            }
+                            else if (y === height) {
+                                if (isDesert) b = BLOCK.SAND;
+                                else if (isCold) b = BLOCK.SNOW;
+                                else b = BLOCK.GRASS;
+                            }
+                        } else {
+                            // Carved out block -> Aquifer logic
+                            if (y <= 11) {
+                                b = BLOCK.LAVA; // Deep caves fill with lava
+                            } else if (y <= SEA_LEVEL) {
+                                b = BLOCK.WATER; // Caves below sea level fill with water
+                            } else {
+                                b = BLOCK.AIR;
+                            }
+                        }
                     }
                     else if (y <= SEA_LEVEL && y > height) {
-                        b = BLOCK.WATER;
+                        b = BLOCK.WATER; // Ocean surface water
                     }
 
                     blocks[idx] = b;
