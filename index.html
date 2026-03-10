@@ -184,47 +184,26 @@
         </div>
     </div>
 
-    <!-- Inventory Screen -->
+    <!-- Inventory Screen (Sprite based 176x166) -->
     <div id="inventory-screen" class="screen hidden">
-        <div id="inventory-box">
-            <div id="inv-top">
-                <!-- 2x2 crafting -->
-                <div id="craft-2x2-area">
-                    <h3>Crafteo</h3>
-                    <div id="craft-grid-2x2"></div>
-                    <div id="craft-arrow-2x2">➜</div>
-                    <div id="craft-output-2x2" class="item-slot output-slot" data-slot="output"></div>
-                </div>
-                <!-- Equipment -->
-                <div id="equipment-area">
-                    <h3>Equipo</h3>
-                    <div id="armor-slots"></div>
-                </div>
-            </div>
-            <!-- Full inventory grid -->
-            <div id="inventory-grid"></div>
-            <!-- Hotbar row inside inventory -->
-            <div id="inv-hotbar"></div>
+        <div id="inventory-gui">
+            <!-- All slots are appended here by JS with absolute coords -->
         </div>
     </div>
 
     <!-- Crafting Table Screen -->
     <div id="crafting-table-screen" class="screen hidden">
-        <div id="crafting-box">
-            <h2>Mesa de Crafteo</h2>
-            <div id="craft-area-3x3">
-                <div id="craft-grid-3x3"></div>
-                <div id="craft-arrow-3x3">➜</div>
-                <div id="craft-output-3x3" class="item-slot output-slot" data-slot="output"></div>
-            </div>
-            <div id="ct-inventory-grid"></div>
-            <div id="ct-hotbar"></div>
-            <button id="btn-close-crafting" class="menu-btn" style="margin-top:1rem;">Cerrar</button>
+        <div id="ct-gui">
+            <!-- All crafting slots appended by JS -->
         </div>
+        <button id="btn-close-crafting" class="ct-close-btn">X Cerrar</button>
     </div>
 
     <!-- Block Break Overlay -->
     <canvas id="break-overlay" class="hidden"></canvas>
+
+    <!-- Floating Cursor for Drag & Drop -->
+    <div id="floating-cursor" class="hidden"></div>
 
     <script type="module" src="/src/main.js"></script>
 </body>

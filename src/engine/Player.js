@@ -34,9 +34,11 @@ export class Player {
         this._lastSpaceTap = 0;    // for double-tap Space to toggle fly
         this._flyVelY = 0;
 
-        // Inventory: 36 slots
-        this.inventory = Array(36).fill(null);
+        // Inventory
+        this.inventory = new Array(36).fill(null);
+        this.armor = new Array(4).fill(null);
         this.hotbarSlot = 0;
+        this.cursor = null; // Represents item held by mouse in inventory UI
 
         // Block breaking
         this.breakTarget = null;

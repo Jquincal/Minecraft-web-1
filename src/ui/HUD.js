@@ -1,7 +1,8 @@
 import { getItemColor, getItemName } from '../engine/blocks.js';
 
 export class HUD {
-    constructor() {
+    constructor(icons = {}) {
+        this.icons = icons;
         this.el = document.getElementById('hud');
         this.fpsEl = document.getElementById('fps-counter');
         this.posEl = document.getElementById('pos-display');
@@ -99,7 +100,13 @@ export class HUD {
             if (slot && slot.id) {
                 const swatch = document.createElement('div');
                 swatch.className = 'block-swatch';
-                swatch.style.background = getItemColor(slot.id);
+                
+                if (this.icons[slot.id]) {
+                    swatch.style.backgroundImage = `url(${this.icons[slot.id]})`;
+                } else {
+                    swatch.style.background = getItemColor(slot.id);
+                }
+                
                 swatch.title = getItemName(slot.id);
                 el.appendChild(swatch);
                 if (slot.count > 1) {

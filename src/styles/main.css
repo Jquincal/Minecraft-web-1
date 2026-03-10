@@ -823,25 +823,107 @@ body {
     justify-content: center;
 }
 
-/* Inventory grids */
-.inv-grid {
-    display: grid;
-    grid-template-columns: repeat(9, 46px);
-    gap: 3px;
+/* ── INVENTORY SCREEN (Sprite Based) ── */
+#inventory-screen {
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
 }
 
-.craft-grid-2 {
-    display: grid;
-    grid-template-columns: repeat(2, 46px);
-    gap: 3px;
+#inventory-gui {
+    /* Layout: 176×166 px base, scaled 4× from center via flexbox parent */
+    width: 176px;
+    height: 166px;
+    flex-shrink: 0;
+    background-image: url('/textures/gui/container/inventory.png');
+    background-size: 256px 256px;
+    background-position: 0 0;
+    image-rendering: pixelated;
+    transform: scale(4);
+    transform-origin: center center;
+    position: relative; /* slots use absolute within this */
 }
 
-.craft-grid-3 {
-    display: grid;
-    grid-template-columns: repeat(3, 46px);
-    gap: 3px;
+/* Base interactive slot area */
+.gui-slot {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    image-rendering: pixelated;
+    /* Hover effect to indicate it's clickable */
 }
 
+#crafting-table-screen {
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+}
+
+#ct-gui {
+    width: 176px;
+    height: 166px;
+    flex-shrink: 0;
+    background-image: url('/textures/gui/container/crafting_table.png');
+    background-size: 256px 256px;
+    background-position: 0 0;
+    image-rendering: pixelated;
+    transform: scale(4);
+    transform-origin: center center;
+    position: relative;
+}
+
+.ct-close-btn {
+    position: absolute;
+    top: calc(50% + 340px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #6b4226;
+    color: #fff;
+    border: 2px solid #3d1f00;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    padding: 4px 12px;
+    cursor: pointer;
+    image-rendering: pixelated;
+}
+
+.gui-slot:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+
+/* Floating element attached to mouse */
+#floating-cursor {
+    position: fixed;
+    width: 64px;
+    height: 64px;
+    pointer-events: none; /* Ignore clicks so they pass to slots */
+    z-index: 9999;
+    image-rendering: pixelated;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    /* Translate to center on mouse cursor */
+    transform: translate(-50%, -50%);
+}
+#floating-cursor .slot-count {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    color: white;
+    font-size: 24px;
+    text-shadow: 2px 2px 0 #000;
+    font-weight: bold;
+}
+
+/* Note: exact slot positions will be applied via JavaScript inline styles
+   because they form grids (e.g. 9 cols x 3 rows). 
+   We just need the container to hold them absolutely. */
 .item-slot {
     width: 46px;
     height: 46px;

@@ -7,6 +7,7 @@ import { HUD } from './ui/HUD.js';
 import { MainMenu, ModeSelectScreen, LoadingScreen, PauseMenu, SettingsModal, CreditsModal } from './ui/Menus.js';
 import { InventoryScreen, CraftingTableScreen } from './ui/InventoryScreens.js';
 import { MobileControls } from './ui/MobileControls.js';
+import { IconRenderer } from './ui/IconRenderer.js';
 
 // ──────────────────────────────────────────────────────────
 // State Machine
@@ -102,6 +103,11 @@ async function startGame(mode = 'survival') {
         loadingScreen.setProgress(0.1);
         const atlas = await buildTextureAtlas();
 
+        // Generate 3D Icons
+        loadingScreen.setProgress(0.15);
+        const iconRenderer = new IconRenderer();
+        await iconRenderer.generateAllIcons();
+
         // Create world
         loadingScreen.setProgress(0.2);
         world = new World(Math.random());
@@ -130,9 +136,9 @@ async function startGame(mode = 'survival') {
         player.pos.set(spawnX + 8, spawnY, spawnZ + 8);
 
         // Build UI
-        hud = new HUD();
-        invScreen = new InventoryScreen(player);
-        craftScreen = new CraftingTableScreen(player);
+        hud = new HUD(iconRenderer.icons);
+        invScreen = new InventoryScreen(player, iconRenderer.icons);
+        craftScreen = new CraftingTableScreen(player, iconRenderer.icons);
         mobileControls = new MobileControls(player);
 
         // Input for pause/inventory
